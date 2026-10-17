@@ -83,7 +83,7 @@ export class DisputeHelper {
 
         ticketBody = `Dear ${platform} Partner Insurance & Safety Desk,\n\nI am reporting an on-duty road incident that occurred on ${date} while fulfilling delivery/trip ${orderId}.\n\nIncident summary:\n${data.workerExplanation}\n\nPlease initiate the platform group accident insurance claim cover immediately and share the emergency cashless hospital network details and TPA claim number.\n\nWorker Name: ${workerName}\nPartner ID: ${partnerId}`;
 
-        legalNotice = `FORMAL NOTIFICATION OF INJURY & INSURANCE CLAIM\nTo: Corporate Insurance Administrator & HR, ${platform}\nDate: ${date}\n\nTake notice of work-related injury sustained during official platform operating hours. Under policy obligations, please release immediate emergency hospitalization guarantee.\n\nClaimant: ${workerName}\nID: ${partnerId}`;
+        legalNotice = `FORMAL NOTIFICATION OF INJURY & INSURANCE CLAIM\nTo: Corporate Insurance Administrator & HR, ${platform}\nDate: ${date}\n\nTake notice of work-related injury sustained during official platform operating hours. Under policy obligations of Mandatory Group Personal Accident Insurance, please release immediate emergency hospitalization guarantee.\n\nClaimant: ${workerName}\nID: ${partnerId}`;
 
         whatsappText = `URGENT: ${platform} Safety Desk. I had an accident on duty today (${date}) during order ${orderId}. Please connect with me for emergency insurance hospital claim. Partner ID: ${partnerId}.`;
         break;
