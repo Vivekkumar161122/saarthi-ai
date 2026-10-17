@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 210 20% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222 47% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222 47% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221 83% 53%;
+  --radius: 0.75rem;
+}
+
+/* High Contrast Outdoor Mode (For bright sunlight on motorcycle mounts - WCAG AAA) */
+.high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 54 100% 50%; /* Vibrant Amber-Gold */
+  --card: 0 0% 5%;
+  --card-foreground: 0 0% 100%;
+  --border: 54 100% 50%;
+  --primary: 54 100% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 85%;
+  --input: 0 0% 10%;
+  --ring: 54 100% 50%;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Accessible focus outline for keyboard and screen reader navigation */
+*:focus-visible {
+  outline: 3px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Minimum 48px touch target rule for accessibility (WCAG 2.1 AA) */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pulse animation for voice listening and emergency SOS */
+@keyframes sos-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(220, 38, 38, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+.animate-sos {
+  animation: sos-pulse 1.8s infinite;
+}
+
+@keyframes wave-bars {
+  0%, 100% { height: 6px; }
+  50% { height: 26px; }
+}
+
+.wave-bar {
+  animation: wave-bars 1s ease-in-out infinite;
+}
