@@ -7,8 +7,10 @@
  * 3. Native Web Streams (ReadableStream, TextEncoder, TextDecoder)
  * 4. Zero-Retention PII Sanitization & Explicit System Delimitation for prompt injection defense
  * 5. Instant fallback to Edge Domain Knowledge Engine for offline/demo/keyless readiness
+ * 6. Strict Request Validation using Zod
  */
 
+import { z } from 'zod';
 import { PIIProtector } from '../../../lib/pii';
 import { WELFARE_SCHEMES } from '../../../lib/welfare';
 import { SafetyGuardian } from '../../../lib/safety';
@@ -18,12 +20,24 @@ import { DocumentHelper } from '../../../lib/document';
 
 export const runtime = 'edge';
 
+const ChatRequestSchema = z.object({
+  messages: z.array(
+    z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string().max(20000)
+    })
+  ).min(1),
+  workerName: z.string().max(100).optional(),
+  language: z.string().max(20).optional(),
+  contextDomain: z.string().max(50).optional()
+});
+
 // 5th-grade reading level system prompt (Token-optimized for low latency)
 const SYSTEM_PROMPT = `You are Saarthi AI, an empathetic, highly practical copilot for gig and informal workers (delivery riders, cab/auto drivers, daily wage earners).
 Rules:
 1. Always communicate in a simple, clear 5th-grade reading level. Avoid complex legal jargon.
 2. Support regional languages (Hindi, Hinglish, Bengali, Tamil, Telugu, Kannada, Marathi, Spanish, English). If user asks in regional vernacular, reply warmly in that language.
-3. Help with all 6 key domains:
+3. Help across all six domains:
    - Earnings & Deductions: Explain net income vs gross, detect unfair penalties or fuel drains.
    - Welfare Schemes: Clearly explain e-Shram, PM-JAY, PM-SYM, and state gig welfare acts with step-by-step application guidance.
    - Safety: Stress physical safety, fatigue breaks, heatwave alerts, and emergency SOS protocols.
@@ -35,8 +49,18 @@ Rules:
 
 export async function POST(req: Request) {
   try {
-    const { messages, workerName, language } = await req.json();
-    const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+    const rawBody = await req.json();
+    const parseResult = ChatRequestSchema.safeParse(rawBody);
+
+    if (!parseResult.success) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request payload', details: parseResult.error.format() }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { messages, workerName, language, contextDomain } = parseResult.data;
+    const lastMessage = messages[messages.length - 1];
     const userPrompt = lastMessage ? lastMessage.content : '';
 
     // Step 1: Security & Privacy - Sanitize and Strip PII before sending to any LLM
@@ -54,7 +78,6 @@ export async function POST(req: Request) {
       try {
         const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${geminiApiKey}&alt=sse`;
 
-        // Format history for Gemini contents
         const geminiContents = [
           ...messages.slice(0, -1).map((m: any) => ({
             role: m.role === 'assistant' ? 'model' : 'user',
@@ -232,6 +255,7 @@ export async function POST(req: Request) {
 
         // Domain 1: Earnings & Payout Analysis
         if (
+          contextDomain === 'earnings' ||
           lower.includes('earn') ||
           lower.includes('salary') ||
           lower.includes('sms') ||
@@ -258,6 +282,7 @@ export async function POST(req: Request) {
         }
         // Domain 2: Safety Practices & Emergency Guidance
         else if (
+          contextDomain === 'safety' ||
           lower.includes('safe') ||
           lower.includes('sos') ||
           lower.includes('tired') ||
@@ -276,6 +301,7 @@ export async function POST(req: Request) {
         }
         // Domain 3: Rights & Welfare Schemes
         else if (
+          contextDomain === 'welfare' ||
           lower.includes('welfare') ||
           lower.includes('scheme') ||
           lower.includes('yojana') ||
@@ -296,7 +322,7 @@ export async function POST(req: Request) {
             `   • **Benefit:** ₹5,00,000 free hospitalization yearly for your family.\n` +
             `   • **Check eligibility:** Call 14555 or visit your nearest Jan Seva Kendra (CSC).\n\n` +
             `3. **PM-SYM Pension Scheme**\n` +
-            `   • **Benefit:** ₹3,00,000 yearly security via ₹3,000 monthly guaranteed pension after age 60.\n` +
+            `   • **Benefit:** ₹3,00,000 yearly security via ₹3,00,000 retirement fund delivering ₹3,000 monthly guaranteed pension after age 60.\n` +
             `   • **Contribution:** Save ₹55–₹200/month; government contributes matching 50%.\n\n` +
             `4. **State Gig Worker Welfare Board Acts**\n` +
             `   • Companies cannot arbitrarily deactivate your ID without a written reason.\n\n` +
@@ -304,6 +330,7 @@ export async function POST(req: Request) {
         }
         // Domain 4: Document Help & Contract Simplifier
         else if (
+          contextDomain === 'document' ||
           lower.includes('contract') ||
           lower.includes('document') ||
           lower.includes('clause') ||
@@ -331,6 +358,7 @@ export async function POST(req: Request) {
         }
         // Domain 5: Grievance & Dispute Drafting
         else if (
+          contextDomain === 'dispute' ||
           lower.includes('dispute') ||
           lower.includes('blocked') ||
           lower.includes('deactivat') ||

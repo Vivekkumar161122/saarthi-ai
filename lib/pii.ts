@@ -16,11 +16,14 @@ export class PIIProtector {
   // Regex detection rules for Indian and international PII
   private static readonly RULES = [
     { type: 'CREDIT_CARD', pattern: /\b(?:\d{4}[ -]?){3}\d{4}\b/g, prefix: 'CARD_NUM' },
-    { type: 'PASSWORD_PIN', pattern: /\b(?:password|passwd|pwd|mpin|cvv|otp)\s*[:=]\s*[a-zA-Z0-9!@#$%^&*]{3,16}\b/gi, prefix: 'SECRET_KEY' },
+    { type: 'PASSWORD_PIN', pattern: /\b(?:password|passwd|pwd|mpin|pin|cvv|otp)\s*[:=]\s*[a-zA-Z0-9!@#$%^&*]{3,16}\b/gi, prefix: 'SECRET_KEY' },
     { type: 'UPI', pattern: /\b[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}\b/g, prefix: 'UPI_ID' },
     { type: 'PHONE', pattern: /(?:(?:\+91[\s-]?)?[6-9]\d{9}|\b(?:\+1[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b)/g, prefix: 'PHONE' },
     { type: 'AADHAAR', pattern: /\b[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}\b/g, prefix: 'GOVT_ID' },
     { type: 'PAN', pattern: /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/gi, prefix: 'TAX_ID' },
+    { type: 'DRIVING_LICENSE', pattern: /\b[A-Z]{2}[0-9]{2}[ -]?[0-9]{11}\b/gi, prefix: 'DL_NO' },
+    { type: 'VOTER_ID', pattern: /\b[A-Z]{3}[0-9]{7}\b/gi, prefix: 'VOTER_ID' },
+    { type: 'IFSC', pattern: /\b[A-Z]{4}0[A-Z0-9]{6}\b/gi, prefix: 'BANK_IFSC' },
     { type: 'EMAIL', pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, prefix: 'EMAIL' },
     { type: 'VEHICLE', pattern: /\b[A-Z]{2}[ -]?[0-9]{1,2}[ -]?[A-Z]{1,3}[ -]?[0-9]{4}\b/gi, prefix: 'VEHICLE' },
     { type: 'BANK_ACCOUNT', pattern: /\b(?:A\/C|Account|Acct|Acc)[:\s#]*(\d{9,18})\b/gi, prefix: 'BANK_ACCT' },
@@ -60,7 +63,7 @@ export class PIIProtector {
       }
     }
 
-    // 2. Scrub Structured PII using regex rules first (UPI, Phone, Govt ID, Vehicle, Bank, Card)
+    // 2. Scrub Structured PII using regex rules first (Cards, Secrets, UPI, Phone, Govt ID, Vehicle, Bank)
     for (const rule of this.RULES) {
       sanitized = sanitized.replace(rule.pattern, (match) => {
         const token = `[${rule.prefix}_${counter++}]`;

@@ -10,7 +10,7 @@
 [![Gemini REST API](https://img.shields.io/badge/Gemini%20REST-Native%20Streams-4285F4?style=flat&logo=google)](https://ai.google.dev/)
 [![Zero External AI SDKs](https://img.shields.io/badge/Dependencies-Zero%20External%20AI%20SDKs-emerald?style=flat)](https://github.com/Vivekkumar161122/saarthi-ai)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-15%2F15%20Passing-emerald?style=flat&logo=vitest)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Tests-32%2F32%20Passing-emerald?style=flat&logo=vitest)](https://vitest.dev/)
 [![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-orange?style=flat)](https://www.w3.org/WAI/standards-guidelines/wcag/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -131,32 +131,50 @@ npm test
 
 ## 🧪 Automated Testing
 
-Saarthi AI includes a comprehensive Vitest test suite covering all core domains:
+Saarthi AI includes a comprehensive Vitest test suite covering all core domains (32/32 tests passing):
 
 ```bash
-✓ tests/saarthi.test.ts (15 tests)
-  ✓ 1. PII Anonymization & Prompt Injection Defense (3)
+✓ tests/saarthi.test.ts (32 tests)
+  ✓ 1. PII Anonymization & Prompt Injection Defense (6)
     ✓ strips phone numbers, Aadhaar, vehicle numbers, and UPI IDs
-    ✓ neutralizes prompt injection payloads
+    ✓ strips PAN, Driving License, Voter ID, and Bank Account numbers
+    ✓ strips credit cards and passwords/PINs
+    ✓ neutralizes prompt injection payloads and jailbreak attempts
     ✓ wraps payloads in explicit system untrusted input boundaries
-  ✓ 2. Earnings & Expense Helper Engine (2)
-    ✓ parses SMS amounts, tips, and computes take-home after fuel
+    ✓ reconstitutes PII tokens back into plain text locally on client
+  ✓ 2. Earnings & Expense Helper Engine (4)
+    ✓ parses Swiggy SMS amounts, tips, and computes take-home after fuel
+    ✓ identifies Zomato and cab ride-share platforms (Uber/Ola)
     ✓ flags warning when net hourly rate falls below informal wage threshold
-  ✓ 3. Safety Protocols & Fatigue Guardian (3)
+    ✓ flags alert when platform penalties exceed 15% of gross earnings
+  ✓ 3. Safety Protocols & Fatigue Guardian (6)
+    ✓ evaluates normal fatigue safely within 2 hours
+    ✓ triggers elevated fatigue warning after 2 continuous hours
+    ✓ triggers high risk fatigue warning after 3 continuous hours
     ✓ triggers dangerous fatigue warning after 4.5 continuous hours
     ✓ generates emergency SOS dispatch with Google Maps GPS link
     ✓ provides localized climate and road hazard advisories
-  ✓ 4. Welfare & Rights Finder Factuality (2)
-    ✓ correctly maps e-Shram benefits and age criteria
+  ✓ 4. Welfare & Rights Finder Factuality (4)
+    ✓ correctly maps e-Shram benefits, age criteria, and helpline
+    ✓ correctly maps Ayushman Bharat PM-JAY health protection
     ✓ filters out PM-SYM pension for workers over age 40 or earning > 15000
-  ✓ 5. Document Help & Contract Simplifier (2)
+    ✓ protects workers under state platform gig worker welfare boards
+  ✓ 5. Document Help & Contract Simplifier (4)
     ✓ identifies critical deactivation and liability risks in platform TOS
     ✓ extracts TDS 194-O refund rights for low income gig workers
-  ✓ 6. Dispute & Grievance Drafter (2)
+    ✓ detects insurance active delivery restriction traps
+    ✓ computes Flesch-Kincaid reading grade metric reliably
+  ✓ 6. Dispute & Grievance Drafter (4)
     ✓ generates legally structured deactivation appeal with citations
-    ✓ generates accident insurance claim notice with TPA demand
-  ✓ 7. Edge API Route Streaming (Zero External AI SDKs) (1)
-    ✓ returns native ReadableStream with text/plain charset=utf-8
+    ✓ generates accident insurance claim notice with statutory citations
+    ✓ generates false penalty contest letter with GPS telemetry grounds
+    ✓ generates unpaid wages notice with payment timeline demand
+  ✓ 7. Multilingual Accessibility & Inclusivity (1)
+    ✓ provides all 9 regional languages with speech codes
+  ✓ 8. Edge API Route Streaming (Zero External AI SDKs & Zod Validation) (3)
+    ✓ returns native ReadableStream with text/plain charset=utf-8 for earnings query
+    ✓ rejects invalid payloads with status 400 via Zod schema
+    ✓ streams safety advice when safety domain context is requested
 ```
 
 ---
