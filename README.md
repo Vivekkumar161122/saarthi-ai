@@ -1,6 +1,10 @@
 # Saarthi AI (सारथी) 🚀
 ### *The Intelligent Copilot & Advocate for Gig and Informal Workers*
 
+🌐 **Live Web Application:** [https://saarthi-ai-lac-phi.vercel.app/](https://saarthi-ai-lac-phi.vercel.app/)
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-saarthi--ai--lac--phi.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://saarthi-ai-lac-phi.vercel.app/)
+
 [![Next.js 14](https://img.shields.io/badge/Next.js-14.2-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![Vercel AI SDK](https://img.shields.io/badge/Vercel%20AI%20SDK-3.4-blue?style=flat&logo=vercel)](https://sdk.vercel.ai/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
