@@ -1,10 +1,16 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Saarthi AI — Copilot & Advocate for Gig Workers',
   description: 'AI-powered assistant for gig and informal workers: earnings tracking, welfare schemes, emergency safety, and dispute drafting.',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: '#2563eb',
 };
 
