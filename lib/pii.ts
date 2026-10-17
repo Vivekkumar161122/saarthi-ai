@@ -1,9 +1,11 @@
 /**
- * Security & Privacy Guardrails for Saarthi AI
+ * Enterprise Security, Privacy & Guardrails Engine for Saarthi AI
  * 
- * 1. Zero-Retention PII Anonymization & Tokenization
- * 2. Multi-Vector Prompt Injection Defense & Sanitization
+ * 1. Zero-Retention PII Anonymization & Tokenization (Passports, Voter IDs, DLs, Cards, Aadhaar, PAN)
+ * 2. Multi-Vector Prompt Injection & Exfiltration Defense (Markdown traps, XSS, Base64, DAN attacks)
  * 3. Strict Boundary Delimitation for LLM Payloads
+ * 4. High-Efficiency Sliding-Window Edge Rate Limiter
+ * 5. In-Memory Edge Semantic Cache for instant sub-millisecond responses
  */
 
 export interface AnonymizationResult {
@@ -22,15 +24,17 @@ export class PIIProtector {
     { type: 'AADHAAR', pattern: /\b[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}\b/g, prefix: 'GOVT_ID' },
     { type: 'PAN', pattern: /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/gi, prefix: 'TAX_ID' },
     { type: 'DRIVING_LICENSE', pattern: /\b[A-Z]{2}[0-9]{2}[ -]?[0-9]{11}\b/gi, prefix: 'DL_NO' },
+    { type: 'PASSPORT', pattern: /\b[A-Z][0-9]{7}\b/g, prefix: 'PASSPORT_NO' },
     { type: 'VOTER_ID', pattern: /\b[A-Z]{3}[0-9]{7}\b/gi, prefix: 'VOTER_ID' },
     { type: 'IFSC', pattern: /\b[A-Z]{4}0[A-Z0-9]{6}\b/gi, prefix: 'BANK_IFSC' },
     { type: 'EMAIL', pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, prefix: 'EMAIL' },
     { type: 'VEHICLE', pattern: /\b[A-Z]{2}[ -]?[0-9]{1,2}[ -]?[A-Z]{1,3}[ -]?[0-9]{4}\b/gi, prefix: 'VEHICLE' },
     { type: 'BANK_ACCOUNT', pattern: /\b(?:A\/C|Account|Acct|Acc)[:\s#]*(\d{9,18})\b/gi, prefix: 'BANK_ACCT' },
+    { type: 'IP_ADDRESS', pattern: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g, prefix: 'IP_ADDR' },
     { type: 'COORDINATES', pattern: /[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)/g, prefix: 'GPS_LOC' }
   ];
 
-  // Common prompt injection attack signatures
+  // Common prompt injection attack signatures & exfiltration payloads
   private static readonly INJECTION_PATTERNS = [
     /ignore\s+(all\s+)?(previous|prior|above|existing)\s+instructions/i,
     /disregard\s+(all\s+)?(previous|prior|above|rules|system)\s+instructions/i,
@@ -43,7 +47,10 @@ export class PIIProtector {
     /sudo\s+mode/i,
     /simulate\s+an\s+unrestricted/i,
     /bypass\s+all\s+(safety|content|ethical)\s+(filters|rules)/i,
-    /\[system\s+message\]/i
+    /\[system\s+message\]/i,
+    /!\[.*?\]\(https?:\/\/.*?\)/i, // Markdown image exfiltration trap
+    /<\/?(?:script|iframe|object|embed)[^>]*>/i, // Malicious HTML/XSS injection
+    /(?:javascript:|onerror=|onload=)/i // Script handler injection
   ];
 
   /**
@@ -55,7 +62,7 @@ export class PIIProtector {
     const strippedCategories: Set<string> = new Set();
     let counter = 1;
 
-    // 1. Strip prompt injection payloads
+    // 1. Strip prompt injection payloads and exfiltration traps
     for (const pattern of this.INJECTION_PATTERNS) {
       if (pattern.test(sanitized)) {
         sanitized = sanitized.replace(pattern, '[BLOCKED_PROMPT_INJECTION_PAYLOAD]');
@@ -63,7 +70,7 @@ export class PIIProtector {
       }
     }
 
-    // 2. Scrub Structured PII using regex rules first (Cards, Secrets, UPI, Phone, Govt ID, Vehicle, Bank)
+    // 2. Scrub Structured PII using regex rules
     for (const rule of this.RULES) {
       sanitized = sanitized.replace(rule.pattern, (match) => {
         const token = `[${rule.prefix}_${counter++}]`;
@@ -129,5 +136,68 @@ export class PIIProtector {
 <user_untrusted_input>
 ${sanitizedPrompt}
 </user_untrusted_input>`;
+  }
+}
+
+/**
+ * High-Performance Edge Rate Limiter (Sliding Window Algorithm)
+ * Protects edge function from abuse, DoS, and unauthorized token exhaustion.
+ */
+export class EdgeRateLimiter {
+  private static readonly requests = new Map<string, number[]>();
+  private static readonly WINDOW_MS = 60 * 1000; // 1 minute window
+  private static readonly MAX_REQUESTS = 60; // 60 requests per minute
+
+  public static checkLimit(identifier: string = 'global'): { allowed: boolean; remaining: number } {
+    const now = Date.now();
+    const timestamps = this.requests.get(identifier) || [];
+
+    // Filter out timestamps outside sliding window
+    const recent = timestamps.filter((t) => now - t < this.WINDOW_MS);
+
+    if (recent.length >= this.MAX_REQUESTS) {
+      this.requests.set(identifier, recent);
+      return { allowed: false, remaining: 0 };
+    }
+
+    recent.push(now);
+    this.requests.set(identifier, recent);
+    return { allowed: true, remaining: this.MAX_REQUESTS - recent.length };
+  }
+
+  public static reset(identifier: string = 'global') {
+    this.requests.delete(identifier);
+  }
+}
+
+/**
+ * In-Memory Edge Semantic Cache
+ * Provides sub-millisecond instant responses for repeated query hashes.
+ */
+export class EdgeResponseCache {
+  private static readonly cache = new Map<string, { response: string; timestamp: number }>();
+  private static readonly TTL_MS = 10 * 60 * 1000; // 10 minutes TTL
+
+  public static get(key: string): string | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+    if (Date.now() - entry.timestamp > this.TTL_MS) {
+      this.cache.delete(key);
+      return null;
+    }
+    return entry.response;
+  }
+
+  public static set(key: string, response: string) {
+    if (this.cache.size > 200) {
+      // Evict oldest entry
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey) this.cache.delete(firstKey);
+    }
+    this.cache.set(key, { response, timestamp: Date.now() });
+  }
+
+  public static clear() {
+    this.cache.clear();
   }
 }

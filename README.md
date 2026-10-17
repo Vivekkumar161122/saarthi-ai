@@ -10,7 +10,7 @@
 [![Gemini REST API](https://img.shields.io/badge/Gemini%20REST-Native%20Streams-4285F4?style=flat&logo=google)](https://ai.google.dev/)
 [![Zero External AI SDKs](https://img.shields.io/badge/Dependencies-Zero%20External%20AI%20SDKs-emerald?style=flat)](https://github.com/Vivekkumar161122/saarthi-ai)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-32%2F32%20Passing-emerald?style=flat&logo=vitest)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Tests-41%2F41%20Passing-emerald?style=flat&logo=vitest)](https://vitest.dev/)
 [![Accessibility](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-orange?style=flat)](https://www.w3.org/WAI/standards-guidelines/wcag/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -131,20 +131,24 @@ npm test
 
 ## 🧪 Automated Testing
 
-Saarthi AI includes a comprehensive Vitest test suite covering all core domains (32/32 tests passing):
+Saarthi AI includes a comprehensive Vitest test suite covering all core domains (41/41 tests passing):
 
 ```bash
-✓ tests/saarthi.test.ts (32 tests)
-  ✓ 1. PII Anonymization & Prompt Injection Defense (6)
+✓ tests/saarthi.test.ts (41 tests)
+  ✓ 1. PII Anonymization & Prompt Injection Defense (9)
     ✓ strips phone numbers, Aadhaar, vehicle numbers, and UPI IDs
     ✓ strips PAN, Driving License, Voter ID, and Bank Account numbers
+    ✓ strips Passport numbers and IPv4 addresses
     ✓ strips credit cards and passwords/PINs
     ✓ neutralizes prompt injection payloads and jailbreak attempts
+    ✓ neutralizes markdown image data exfiltration attempts
+    ✓ neutralizes HTML and script tag injection attempts
     ✓ wraps payloads in explicit system untrusted input boundaries
     ✓ reconstitutes PII tokens back into plain text locally on client
-  ✓ 2. Earnings & Expense Helper Engine (4)
+  ✓ 2. Earnings & Expense Helper Engine (5)
     ✓ parses Swiggy SMS amounts, tips, and computes take-home after fuel
     ✓ identifies Zomato and cab ride-share platforms (Uber/Ola)
+    ✓ handles Blinkit, Zepto, and Porter deliveries
     ✓ flags warning when net hourly rate falls below informal wage threshold
     ✓ flags alert when platform penalties exceed 15% of gross earnings
   ✓ 3. Safety Protocols & Fatigue Guardian (6)
@@ -159,10 +163,11 @@ Saarthi AI includes a comprehensive Vitest test suite covering all core domains 
     ✓ correctly maps Ayushman Bharat PM-JAY health protection
     ✓ filters out PM-SYM pension for workers over age 40 or earning > 15000
     ✓ protects workers under state platform gig worker welfare boards
-  ✓ 5. Document Help & Contract Simplifier (4)
+  ✓ 5. Document Help & Contract Simplifier (5)
     ✓ identifies critical deactivation and liability risks in platform TOS
     ✓ extracts TDS 194-O refund rights for low income gig workers
     ✓ detects insurance active delivery restriction traps
+    ✓ detects ride-share dynamic 35% commission surge clauses
     ✓ computes Flesch-Kincaid reading grade metric reliably
   ✓ 6. Dispute & Grievance Drafter (4)
     ✓ generates legally structured deactivation appeal with citations
@@ -171,8 +176,13 @@ Saarthi AI includes a comprehensive Vitest test suite covering all core domains 
     ✓ generates unpaid wages notice with payment timeline demand
   ✓ 7. Multilingual Accessibility & Inclusivity (1)
     ✓ provides all 9 regional languages with speech codes
-  ✓ 8. Edge API Route Streaming (Zero External AI SDKs & Zod Validation) (3)
+  ✓ 8. Edge Rate Limiter & Semantic Cache (3)
+    ✓ allows requests within window threshold
+    ✓ stores and retrieves cached edge responses
+    ✓ returns null for non-existent cache keys
+  ✓ 9. Edge API Route Streaming (Zero External AI SDKs & Zod Validation) (4)
     ✓ returns native ReadableStream with text/plain charset=utf-8 for earnings query
+    ✓ returns instant cached response with X-Cache-Status HIT on identical query
     ✓ rejects invalid payloads with status 400 via Zod schema
     ✓ streams safety advice when safety domain context is requested
 ```

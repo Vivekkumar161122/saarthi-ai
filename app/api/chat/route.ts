@@ -8,10 +8,11 @@
  * 4. Zero-Retention PII Sanitization & Explicit System Delimitation for prompt injection defense
  * 5. Instant fallback to Edge Domain Knowledge Engine for offline/demo/keyless readiness
  * 6. Strict Request Validation using Zod
+ * 7. Edge Rate Limiter (Sliding Window) & Edge Semantic Response Cache
  */
 
 import { z } from 'zod';
-import { PIIProtector } from '../../../lib/pii';
+import { PIIProtector, EdgeRateLimiter, EdgeResponseCache } from '../../../lib/pii';
 import { WELFARE_SCHEMES } from '../../../lib/welfare';
 import { SafetyGuardian } from '../../../lib/safety';
 import { EarningsHelper } from '../../../lib/earnings';
@@ -49,6 +50,16 @@ Rules:
 
 export async function POST(req: Request) {
   try {
+    // Edge Rate Limiting check
+    const clientIdentifier = req.headers.get('x-forwarded-for') || 'global_client';
+    const rateCheck = EdgeRateLimiter.checkLimit(clientIdentifier);
+    if (!rateCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Too Many Requests', message: 'Rate limit exceeded. Please wait a moment before sending another prompt.' }),
+        { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': '60' } }
+      );
+    }
+
     const rawBody = await req.json();
     const parseResult = ChatRequestSchema.safeParse(rawBody);
 
@@ -65,6 +76,25 @@ export async function POST(req: Request) {
 
     // Step 1: Security & Privacy - Sanitize and Strip PII before sending to any LLM
     const { sanitizedText, strippedCategories } = PIIProtector.sanitizeAndAnonymize(userPrompt, workerName);
+
+    // Cache check for instant sub-millisecond retrieval (Edge Efficiency)
+    const cacheKey = `${language || 'en'}_${contextDomain || 'gen'}_${sanitizedText.trim().toLowerCase()}`;
+    const cachedResponse = EdgeResponseCache.get(cacheKey);
+    if (cachedResponse) {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          controller.enqueue(encoder.encode(cachedResponse));
+          controller.close();
+        }
+      });
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Cache-Status': 'HIT'
+        }
+      });
+    }
 
     // Wrap prompt in strict system boundaries for prompt injection defense
     const guardedPrompt = PIIProtector.wrapInSystemBoundaries(sanitizedText, language || 'en');
@@ -112,6 +142,7 @@ export async function POST(req: Request) {
           const stream = new ReadableStream({
             async start(controller) {
               let buffer = '';
+              let fullCollected = '';
               try {
                 while (true) {
                   const { done, value } = await reader.read();
@@ -131,6 +162,7 @@ export async function POST(req: Request) {
                           const chunkText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
                           if (chunkText) {
                             controller.enqueue(encoder.encode(chunkText));
+                            fullCollected += chunkText;
                           }
                         } catch {
                           // Ignore parsing hiccups on partial SSE frames
@@ -145,6 +177,10 @@ export async function POST(req: Request) {
                     encoder.encode(`\n\n*(🛡️ Privacy Notice: ${strippedCategories.join(', ')} were automatically masked before transmission.)*`)
                   );
                 }
+
+                if (fullCollected) {
+                  EdgeResponseCache.set(cacheKey, fullCollected);
+                }
               } catch (streamErr) {
                 console.error('Gemini Stream Error:', streamErr);
               } finally {
@@ -157,7 +193,8 @@ export async function POST(req: Request) {
             headers: {
               'Content-Type': 'text/plain; charset=utf-8',
               'Cache-Control': 'no-cache, no-transform',
-              'Connection': 'keep-alive'
+              'Connection': 'keep-alive',
+              'X-Cache-Status': 'MISS'
             }
           });
         }
@@ -322,7 +359,7 @@ export async function POST(req: Request) {
             `   • **Benefit:** ₹5,00,000 free hospitalization yearly for your family.\n` +
             `   • **Check eligibility:** Call 14555 or visit your nearest Jan Seva Kendra (CSC).\n\n` +
             `3. **PM-SYM Pension Scheme**\n` +
-            `   • **Benefit:** ₹3,00,000 yearly security via ₹3,00,000 retirement fund delivering ₹3,000 monthly guaranteed pension after age 60.\n` +
+            `   • **Benefit:** ₹3,00,000 yearly security via ₹3,000 monthly guaranteed pension after age 60.\n` +
             `   • **Contribution:** Save ₹55–₹200/month; government contributes matching 50%.\n\n` +
             `4. **State Gig Worker Welfare Board Acts**\n` +
             `   • Companies cannot arbitrarily deactivate your ID without a written reason.\n\n` +
@@ -432,6 +469,9 @@ export async function POST(req: Request) {
           generatedAnswer += `\n\n*(🛡️ Privacy Notice: ${strippedCategories.join(', ')} were automatically masked before processing to protect your identity.)*`;
         }
 
+        // Cache the result for subsequent identical queries
+        EdgeResponseCache.set(cacheKey, generatedAnswer);
+
         // Stream tokens word-by-word with realistic human-paced delivery for low-latency TTFT
         const words = generatedAnswer.split(' ');
         for (let i = 0; i < words.length; i++) {
@@ -446,7 +486,8 @@ export async function POST(req: Request) {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive'
+        'Connection': 'keep-alive',
+        'X-Cache-Status': 'MISS'
       }
     });
   } catch (error: any) {

