@@ -18,7 +18,7 @@ export class PIIProtector {
   // Regex detection rules for Indian and international PII
   private static readonly RULES = [
     { type: 'CREDIT_CARD', pattern: /\b(?:\d{4}[ -]?){3}\d{4}\b/g, prefix: 'CARD_NUM' },
-    { type: 'PASSWORD_PIN', pattern: /\b(?:password|passwd|pwd|mpin|pin|cvv|otp)\s*[:=]\s*[a-zA-Z0-9!@#$%^&*]{3,16}\b/gi, prefix: 'SECRET_KEY' },
+    { type: 'PASSWORD_PIN', pattern: /\b(?:password|passwd|pwd|mpin|pin|cvv|otp|secret\s*(?:pass(?:word)?|key|code)?)\s*[:=]?\s*[a-zA-Z0-9!@#$%^&*]{3,16}\b/gi, prefix: 'SECRET_KEY' },
     { type: 'UPI', pattern: /\b[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}\b/g, prefix: 'UPI_ID' },
     { type: 'PHONE', pattern: /(?:(?:\+91[\s-]?)?[6-9]\d{9}|\b(?:\+1[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b)/g, prefix: 'PHONE' },
     { type: 'AADHAAR', pattern: /\b[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}\b/g, prefix: 'GOVT_ID' },
@@ -28,7 +28,7 @@ export class PIIProtector {
     { type: 'VOTER_ID', pattern: /\b[A-Z]{3}[0-9]{7}\b/gi, prefix: 'VOTER_ID' },
     { type: 'IFSC', pattern: /\b[A-Z]{4}0[A-Z0-9]{6}\b/gi, prefix: 'BANK_IFSC' },
     { type: 'EMAIL', pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, prefix: 'EMAIL' },
-    { type: 'VEHICLE', pattern: /\b[A-Z]{2}[ -]?[0-9]{1,2}[ -]?[A-Z]{1,3}[ -]?[0-9]{4}\b/gi, prefix: 'VEHICLE' },
+    { type: 'VEHICLE', pattern: /(?:\b[A-Z]{2}[ -]?[0-9]{1,2}[ -]?[A-Z]{1,3}[ -]?[0-9]{4}\b|\b(?:driving\s+)?(?:bike|vehicle|car|auto|scooter|cab)(?:(?:\s+(?:no|num|number|reg|registration))?\s*[:=]?\s+(?!\b(?:and|or|in|at|is|was|to|for|with)\b)[A-Za-z0-9\-]{2,15})\b)/gi, prefix: 'VEHICLE' },
     { type: 'BANK_ACCOUNT', pattern: /\b(?:A\/C|Account|Acct|Acc)[:\s#]*(\d{9,18})\b/gi, prefix: 'BANK_ACCT' },
     { type: 'IP_ADDRESS', pattern: /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g, prefix: 'IP_ADDR' },
     { type: 'COORDINATES', pattern: /[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)/g, prefix: 'GPS_LOC' }

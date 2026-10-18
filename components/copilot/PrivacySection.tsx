@@ -11,10 +11,10 @@ interface PrivacySectionProps {
 
 export function PrivacySection({ language }: PrivacySectionProps) {
   const [sampleInput, setSampleInput] = useState(
-    'My name is Ramesh Kumar, mobile 9876543210, driving bike DL-01-AB-1234, pay me at ramesh@okhdfc. Password: SecretPass123.'
+    'My name is Vivek kumar, phone number 6284439257, bike number 007, pay on 6284439257@upi, secret pass 007.'
   );
 
-  const anonymized = PIIProtector.sanitizeAndAnonymize(sampleInput, 'Ramesh Kumar');
+  const anonymized = PIIProtector.sanitizeAndAnonymize(sampleInput, 'Vivek kumar');
 
   return (
     <div
