@@ -21,7 +21,7 @@ export function DisputeSection({ workerName, onTriggerGenAI, onSpeakText }: Disp
   );
   const [generatedDispute, setGeneratedDispute] = useState<GeneratedDispute | null>(() =>
     DisputeHelper.generateDisputeLetter({
-      workerName: workerName || 'Raju Kumar',
+      workerName: workerName || 'Vivek Kumar',
       partnerId: 'GIG-9941',
       platform: 'Zomato',
       disputeType: 'deactivation',

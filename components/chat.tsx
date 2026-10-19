@@ -16,7 +16,7 @@ import { PrivacySection } from './copilot/PrivacySection';
 export function GigCopilotChat() {
   const [activeTab, setActiveTab] = useState<ActiveTabKey>('chat');
   const [highContrast, setHighContrast] = useState(false);
-  const [workerName, setWorkerName] = useState('Raju Kumar');
+  const [workerName, setWorkerName] = useState('Vivek Kumar');
   const [language, setLanguage] = useState<SupportedLanguage>('hi');
   const [sosSent, setSosSent] = useState(false);
 

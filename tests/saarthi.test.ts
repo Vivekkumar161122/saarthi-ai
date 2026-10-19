@@ -56,7 +56,7 @@ describe('1. PII Anonymization & Prompt Injection Defense (Security & Privacy)',
   });
 
   it('strips Vivek kumar credentials: phone, bike number, UPI, and secret pass', () => {
-    const raw = 'My name is Vivek kumar, phone number 6284439257, bike number 007, pay on 6284439257@upi, secret pass 007.';
+    const raw = 'My name is Vivek kumar, phone number 6284439257, bike number 007, pay on 007@upi, secret pass 007.';
     const res = PIIProtector.sanitizeAndAnonymize(raw, 'Vivek kumar');
 
     expect(res.sanitizedText).not.toContain('Vivek kumar');
@@ -103,9 +103,9 @@ describe('1. PII Anonymization & Prompt Injection Defense (Security & Privacy)',
 
   it('reconstitutes PII tokens back into plain text locally on client', () => {
     const textWithTokens = 'Hello [WORKER_NAME_1], your phone is [PHONE_2].';
-    const tokenMap = { '[WORKER_NAME_1]': 'Raju Kumar', '[PHONE_2]': '9876543210' };
+    const tokenMap = { '[WORKER_NAME_1]': 'Vivek Kumar', '[PHONE_2]': '9876543210' };
     const restored = PIIProtector.restorePII(textWithTokens, tokenMap);
-    expect(restored).toBe('Hello Raju Kumar, your phone is 9876543210.');
+    expect(restored).toBe('Hello Vivek Kumar, your phone is 9876543210.');
   });
 });
 
@@ -412,7 +412,7 @@ describe('9. Edge API Route Streaming (Zero External AI SDKs & Zod Validation)',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         messages: [{ role: 'user', content: 'Swiggy earned Rs 1200' }],
-        workerName: 'Raju Kumar',
+        workerName: 'Vivek Kumar',
         language: 'en',
         contextDomain: 'earnings'
       })
@@ -449,7 +449,7 @@ describe('9. Edge API Route Streaming (Zero External AI SDKs & Zod Validation)',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [{ role: 'user', content: 'What is e-Shram card benefit?' }],
-          workerName: 'Raju Kumar',
+          workerName: 'Vivek Kumar',
           language: 'en',
           contextDomain: 'welfare'
         })
@@ -493,7 +493,7 @@ describe('9. Edge API Route Streaming (Zero External AI SDKs & Zod Validation)',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         messages: [{ role: 'user', content: 'I am feeling very tired on bike' }],
-        workerName: 'Raju Kumar',
+        workerName: 'Vivek Kumar',
         language: 'en',
         contextDomain: 'safety'
       })

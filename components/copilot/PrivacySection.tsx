@@ -11,7 +11,7 @@ interface PrivacySectionProps {
 
 export function PrivacySection({ language }: PrivacySectionProps) {
   const [sampleInput, setSampleInput] = useState(
-    'My name is Vivek kumar, phone number 6284439257, bike number 007, pay on 6284439257@upi, secret pass 007.'
+    'My name is Vivek kumar, phone number 6284439257, bike number 007, pay on 007@upi, secret pass 007.'
   );
 
   const anonymized = PIIProtector.sanitizeAndAnonymize(sampleInput, 'Vivek kumar');
