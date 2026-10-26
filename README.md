@@ -18,12 +18,12 @@
 
 ## 📖 Overview
 
-Gig and informal workers—such as delivery riders, cab/auto drivers, and daily wage earners—face severe systemic challenges:
-- **Complex Welfare Bureaucracy:** Unclear access to government schemes like e-Shram, Ayushman Bharat, or PM-SYM pensions.
-- **Opaque Earnings & Deductions:** Difficulty auditing fuel burn, platform cuts, and arbitrary late-delivery penalties.
-- **On-the-Job Physical Hazards:** Extreme fatigue, heatwave conditions, night-time safety risks, and road accidents.
+Gig and informal workers such as delivery riders, cab/auto drivers and daily wage earners—face severe systemic challenges:
+- **Complex Welfare Bureaucracy:** Unclear access to government schemes like e-Shram, Ayushman Bharat or PM-SYM pensions.
+- **Opaque Earnings & Deductions:** Difficulty auditing fuel burn, platform cuts and arbitrary late-delivery penalties.
+- **On-the-Job Physical Hazards:** Extreme fatigue, heatwave conditions, night-time safety risks and road accidents.
 - **Contractual Trap Clauses:** Platform partner agreements that reserve the right to deactivate accounts without notice or deny on-duty accident liability.
-- **Language Barriers & Algorithmic Deactivations:** Sudden platform account blockings without human review, fair hearings, or legal recourse.
+- **Language Barriers & Algorithmic Deactivations:** Sudden platform account blockings without human review, fair hearings or legal recourse.
 
 **Saarthi AI (सारथी)** bridges this gap by delivering an empathetic, accessible, real-time GenAI copilot built with **zero external AI package dependencies**, running directly on the **Vercel Edge Runtime** using native Web Streams and the **Gemini REST API**.
 
