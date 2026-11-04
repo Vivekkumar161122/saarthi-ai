@@ -4,7 +4,7 @@ Thank you for your interest in contributing to **Saarthi AI**, an open-source co
 
 ## Code of Conduct
 
-We are dedicated to providing a welcoming, inclusive, and harassment-free experience for everyone. Please be respectful and empathetic in all interactions.
+We are dedicated to providing a welcoming, inclusive and harassment-free experience for everyone. Please be respectful and empathetic in all interactions.
 
 ## How to Contribute
 
