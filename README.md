@@ -18,14 +18,14 @@
 
 ## 📖 Overview
 
-Gig and informal workers such as delivery riders, cab/auto drivers and daily wage earners—face severe systemic challenges:
+Gig and informal workers such as delivery riders, cab/auto drivers and daily wage earners face severe systemic challenges:
 - **Complex Welfare Bureaucracy:** Unclear access to government schemes like e-Shram, Ayushman Bharat or PM-SYM pensions.
-- **Opaque Earnings & Deductions:** Difficulty auditing fuel burn, platform cuts and arbitrary late-delivery penalties.
+- **Opaque Earnings & Deductions:** Difficulty auditing fuel burn, platform cuts and arbitrary late delivery penalties.
 - **On-the-Job Physical Hazards:** Extreme fatigue, heatwave conditions, night-time safety risks and road accidents.
-- **Contractual Trap Clauses:** Platform partner agreements that reserve the right to deactivate accounts without notice or deny on-duty accident liability.
+- **Contractual Trap Clauses:** Platform partner agreements that reserve the right to deactivate accounts without notice or deny on duty accident liability.
 - **Language Barriers & Algorithmic Deactivations:** Sudden platform account blockings without human review, fair hearings or legal recourse.
 
-**Saarthi AI (सारथी)** bridges this gap by delivering an empathetic, accessible, real-time GenAI copilot built with **zero external AI package dependencies**, running directly on the **Vercel Edge Runtime** using native Web Streams and the **Gemini REST API**.
+**Saarthi AI (सारथी)** bridges this gap by delivering an empathetic, accessible and real-time GenAI copilot built with **zero external AI package dependencies**, running directly on the **Vercel Edge Runtime** using native Web Streams and the **Gemini REST API**.
 
 ---
 
@@ -35,10 +35,10 @@ Gig and informal workers such as delivery riders, cab/auto drivers and daily wag
 | :--- | :--- | :--- |
 | **1. 💰 Earnings Tracking** | Net vs Gross Auditing | Smart regex parsing of payout SMS/text from Swiggy, Zomato, Uber, Ola, Zepto, Blinkit; true take-home calculation factoring fuel costs and platform cuts; flags penalties and sub-minimum wage rates. |
 | **2. 🛡️ Safety Practices** | Road Hazard & Distress Protection | 1-Tap SOS broadcast with GPS coordinates and direct WhatsApp dispatch; continuous driving fatigue tracker with micro-sleep alert; simulated incoming emergency call for polite de-escalation; real-time climate hazard alerts. |
-| **3. 🏛️ Rights & Welfare Schemes** | Benefits & Schemes Database | Simplified 5th-grade summaries of e-Shram Card (₹2L accident cover), Ayushman Bharat (₹5L health cover), PM-SYM Pension, and State Gig Worker Acts; interactive worker eligibility filter. |
-| **4. 📄 Document Help & Simplifier** | Contract & Terms De-Jargoning | Clause-by-clause simplification of platform terms of service, accident insurance policies, and TDS 194-O tax notices; benchmarks original college reading level (Grade 14+) vs. 5th-grade plain language; flags critical deactivation and liability traps. |
-| **5. 📝 Grievance & Dispute Drafting** | Algorithmic Appeal Wizard | Generates formal, legally grounded support tickets, statutory grievance notices, and WhatsApp escalation messages citing labor codes and fair gig principles for wrongful deactivations, unpaid wages, and false customer claims. |
-| **6. 🎙️ Multilingual Accessibility** | Low-Literacy Inclusivity | Regional vernacular support across 9 languages (Hindi, English, Hinglish, Tamil, Telugu, Kannada, Bengali, Marathi, Spanish); native Web Speech API (STT voice typing & TTS audio playback); WCAG 2.1 AA compliant. |
+| **3. 🏛️ Rights & Welfare Schemes** | Benefits & Schemes Database | Simplified 5th-grade summaries of e-Shram Card (₹2L accident cover), Ayushman Bharat (₹5L health cover), PM-SYM Pension and State Gig Worker Acts; interactive worker eligibility filter. |
+| **4. 📄 Document Help & Simplifier** | Contract & Terms De-Jargoning | Clause-by-clause simplification of platform terms of service, accident insurance policies and TDS 194-O tax notices; benchmarks original college reading level (Grade 14+) vs. 5th-grade plain language; flags critical deactivation and liability traps. |
+| **5. 📝 Grievance & Dispute Drafting** | Algorithmic Appeal Wizard | Generates formal, legally grounded support tickets, statutory grievance notices and WhatsApp escalation messages citing labor codes and fair gig principles for wrongful deactivations, unpaid wages and false customer claims. |
+| **6. 🎙️ Multilingual Accessibility** | Low-Literacy Inclusivity | Regional vernacular support across 9 languages (Hindi, English, Hinglish, Tamil, Telugu, Kannada, Bengali, Marathi and Spanish); native Web Speech API (STT voice typing & TTS audio playback); WCAG 2.1 AA compliant. |
 
 ---
 
@@ -47,17 +47,17 @@ Gig and informal workers such as delivery riders, cab/auto drivers and daily wag
 - **Zero External AI SDKs:** No third-party wrapper libraries (`ai`, `@ai-sdk/google`, etc.), eliminating npm peer dependency conflicts and heavy bundle overhead.
 - **Native Web APIs Only:** Streaming responses via native `fetch`, standard `ReadableStream`, `TextEncoder`, and `TextDecoder` directly from Google Gemini REST API (`gemini-1.5-flash:streamGenerateContent`).
 - **Vercel Edge Runtime:** Configured via `export const runtime = 'edge'` in `app/api/chat/route.ts` for zero cold starts.
-- **Zero-Latency Fallback Engine:** If no external API key is configured, Saarthi AI seamlessly falls back to an internal edge domain knowledge engine with instant TTFT.
+- **Zero-Latency Fallback Engine:** If no external API key is configured and Saarthi AI seamlessly falls back to an internal edge domain knowledge engine with instant TTFT.
 
 ---
 
 ## 🔒 Security & Privacy Guardrails
 
 1. **Zero-Retention PII Anonymization (`lib/pii.ts`)**:
-   - Automatically sanitizes and tokenizes high-risk PII (names, 10-digit phone numbers, Aadhaar, PAN, vehicle registration numbers, bank account numbers, passwords/MPINs, credit card numbers, UPI IDs, and GPS coordinates) before hitting remote endpoints.
+   - Automatically sanitizes and tokenizes high-risk PII (names, 10-digit phone numbers, Aadhaar, PAN, vehicle registration numbers, bank account numbers, passwords/MPINs, credit card numbers, UPI IDs and GPS coordinates) before hitting remote endpoints.
    - Deterministic surrogate tokens (e.g. `[PHONE_1]`, `[VEHICLE_1]`) ensure the worker's private data is never exposed.
 2. **Multi-Vector Prompt Injection Defense**:
-   - Sanitizes and neutralizes adversarial prompt injection payloads (e.g., `ignore all previous instructions`, jailbreak roleplays, and zero-width unicode exploits).
+   - Sanitizes and neutralizes adversarial prompt injection payloads (e.g., `ignore all previous instructions`, jailbreak roleplays and zero-width unicode exploits).
    - Encapsulates prompts in strict `<system_safety_instructions>` and `<user_untrusted_input>` delimiter tags.
 
 ---
@@ -66,9 +66,9 @@ Gig and informal workers such as delivery riders, cab/auto drivers and daily wag
 
 - **Outdoor High-Contrast Mode:** High-contrast amber/black theme designed for direct sunlight visibility on motorcycle phone mounts.
 - **Generous Touch Targets:** All interactive buttons and inputs adhere to the minimum $\ge$48x48px touch target standard.
-- **Screen Reader Navigation:** Semantic HTML landmark navigation (`<main>`, `<header>`, `<nav>`, `<article>`, `<section>`, `<footer>`), ARIA live regions, and descriptive labels.
+- **Screen Reader Navigation:** Semantic HTML landmark navigation (`<main>`, `<header>`, `<nav>`, `<article>`, `<section>`, `<footer>`), ARIA live regions and descriptive labels.
 - **Voice-First Interaction:** Web Speech API integration for speech recognition (STT) and text-to-speech read-aloud (TTS).
-- **5th-Grade Reading Level:** Strictly avoids dense legal jargon, using bulleted summaries for fast mobile reading.
+- **5th-Grade Reading Level:** Strictly avoids dense legal jargon and using bulleted summaries for fast mobile reading.
 
 ---
 
