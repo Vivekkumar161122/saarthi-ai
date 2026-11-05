@@ -1,5 +1,5 @@
 # Saarthi AI (सारथी) 🚀
-### *An Intelligent Copilot for Gigs and Informal Workers*
+### *An Intelligent Copilot for Gig and Informal Workers*
 
 🌐 **Live Web Application:** [https://saarthi-ai-lac-phi.vercel.app/](https://saarthi-ai-lac-phi.vercel.app/)
 
