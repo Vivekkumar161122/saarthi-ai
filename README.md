@@ -33,7 +33,7 @@ Gig and informal workers such as delivery riders, cab/auto drivers and daily wag
 
 | Domain | Capability | Key Features |
 | :--- | :--- | :--- |
-| **1. 💰 Earnings Tracking** | Net vs Gross Auditing | Smart regex parsing of payout SMS/text from Swiggy, Zomato, Uber, Ola, Zepto, Blinkit; true take-home calculation factoring fuel costs and platform cuts; flags penalties and sub-minimum wage rates. |
+| **1. 💰 Earnings Tracking** | Net vs Gross Auditing | Smart regex parsing of payout SMS/text from Swiggy, Zomato, Uber, Ola, Zepto, Blinkit etc.; true take-home calculation factoring fuel costs and platform cuts; flags penalties and sub-minimum wage rates. |
 | **2. 🛡️ Safety Practices** | Road Hazard & Distress Protection | 1-Tap SOS broadcast with GPS coordinates and direct WhatsApp dispatch; continuous driving fatigue tracker with micro-sleep alert; simulated incoming emergency call for polite de-escalation; real-time climate hazard alerts. |
 | **3. 🏛️ Rights & Welfare Schemes** | Benefits & Schemes Database | Simplified 5th-grade summaries of e-Shram Card (₹2L accident cover), Ayushman Bharat (₹5L health cover), PM-SYM Pension and State Gig Worker Acts; interactive worker eligibility filter. |
 | **4. 📄 Document Help & Simplifier** | Contract & Terms De-Jargoning | Clause-by-clause simplification of platform terms of service, accident insurance policies and TDS 194-O tax notices; benchmarks original college reading level (Grade 14+) vs. 5th-grade plain language; flags critical deactivation and liability traps. |
