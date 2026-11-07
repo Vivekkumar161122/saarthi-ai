@@ -135,9 +135,9 @@ Saarthi AI includes a comprehensive Vitest test suite covering all core domains 
 
 ```bash
 ✓ tests/saarthi.test.ts (41 tests)
-  ✓ 1. PII Anonymization & Prompt Injection Defense (9)
-    ✓ strips phone numbers, Aadhaar, vehicle numbers, and UPI IDs
-    ✓ strips PAN, Driving License, Voter ID, and Bank Account numbers
+  ✓ 1. PII Anonymization and Prompt Injection Defense (9)
+    ✓ strips phone numbers, Aadhaar, vehicle numbers and UPI IDs
+    ✓ strips PAN, Driving License, Voter ID and Bank Account numbers
     ✓ strips Passport numbers and IPv4 addresses
     ✓ strips credit cards and passwords/PINs
     ✓ neutralizes prompt injection payloads and jailbreak attempts
@@ -145,42 +145,42 @@ Saarthi AI includes a comprehensive Vitest test suite covering all core domains 
     ✓ neutralizes HTML and script tag injection attempts
     ✓ wraps payloads in explicit system untrusted input boundaries
     ✓ reconstitutes PII tokens back into plain text locally on client
-  ✓ 2. Earnings & Expense Helper Engine (5)
-    ✓ parses Swiggy SMS amounts, tips, and computes take-home after fuel
+  ✓ 2. Earnings and Expense Helper Engine (5)
+    ✓ parses Swiggy SMS amounts, tips and computes take-home after fuel
     ✓ identifies Zomato and cab ride-share platforms (Uber/Ola)
-    ✓ handles Blinkit, Zepto, and Porter deliveries
+    ✓ handles Blinkit, Zepto and Porter deliveries
     ✓ flags warning when net hourly rate falls below informal wage threshold
     ✓ flags alert when platform penalties exceed 15% of gross earnings
-  ✓ 3. Safety Protocols & Fatigue Guardian (6)
+  ✓ 3. Safety Protocols and Fatigue Guardian (6)
     ✓ evaluates normal fatigue safely within 2 hours
     ✓ triggers elevated fatigue warning after 2 continuous hours
     ✓ triggers high risk fatigue warning after 3 continuous hours
     ✓ triggers dangerous fatigue warning after 4.5 continuous hours
     ✓ generates emergency SOS dispatch with Google Maps GPS link
     ✓ provides localized climate and road hazard advisories
-  ✓ 4. Welfare & Rights Finder Factuality (4)
-    ✓ correctly maps e-Shram benefits, age criteria, and helpline
+  ✓ 4. Welfare and Rights Finder Factuality (4)
+    ✓ correctly maps e-Shram benefits, age criteria and helpline
     ✓ correctly maps Ayushman Bharat PM-JAY health protection
     ✓ filters out PM-SYM pension for workers over age 40 or earning > 15000
     ✓ protects workers under state platform gig worker welfare boards
-  ✓ 5. Document Help & Contract Simplifier (5)
+  ✓ 5. Document Help and Contract Simplifier (5)
     ✓ identifies critical deactivation and liability risks in platform TOS
     ✓ extracts TDS 194-O refund rights for low income gig workers
     ✓ detects insurance active delivery restriction traps
     ✓ detects ride-share dynamic 35% commission surge clauses
     ✓ computes Flesch-Kincaid reading grade metric reliably
-  ✓ 6. Dispute & Grievance Drafter (4)
+  ✓ 6. Dispute and Grievance Drafter (4)
     ✓ generates legally structured deactivation appeal with citations
     ✓ generates accident insurance claim notice with statutory citations
     ✓ generates false penalty contest letter with GPS telemetry grounds
     ✓ generates unpaid wages notice with payment timeline demand
-  ✓ 7. Multilingual Accessibility & Inclusivity (1)
+  ✓ 7. Multilingual Accessibility and Inclusivity (1)
     ✓ provides all 9 regional languages with speech codes
-  ✓ 8. Edge Rate Limiter & Semantic Cache (3)
+  ✓ 8. Edge Rate Limiter and Semantic Cache (3)
     ✓ allows requests within window threshold
     ✓ stores and retrieves cached edge responses
     ✓ returns null for non-existent cache keys
-  ✓ 9. Edge API Route Streaming (Zero External AI SDKs & Zod Validation) (4)
+  ✓ 9. Edge API Route Streaming (Zero External AI SDKs and Zod Validation) (4)
     ✓ returns native ReadableStream with text/plain charset=utf-8 for earnings query
     ✓ returns instant cached response with X-Cache-Status HIT on identical query
     ✓ rejects invalid payloads with status 400 via Zod schema
